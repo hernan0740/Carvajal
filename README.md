@@ -45,9 +45,9 @@ $password = "";
 $url = "jdbc:mysql://localhost/retocarvajal";
 ***
 ## Base de datos
-*Nombre db:retocarvajal;
-*Contiene las siguientes tablas:
--[productos]-id-nombre-precio-cantidad.
--[listadeseo]-id-idproducto-cantidad.
--[regproducto]-id-idproducto.
+* Nombre db:retocarvajal;
+* Contiene las siguientes tablas:
+* [productos]-id-nombre-precio-cantidad.
+* [listadeseo]-id-idproducto-cantidad.
+* [regproducto]-id-idproducto.
 
