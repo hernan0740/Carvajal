@@ -52,10 +52,25 @@ public class listaDeseoImpl {
 		try {
 			
 			Statement estatuto = conex.getConnection().createStatement();
-
-			estatuto.execute("UPDATE listadeseo SET "
-					+ "cantidad='"+cantidad+
-					"' where id='"+id+"' ");
+			
+			ResultSet r;
+			r = search("SELECT idproducto,cantidad FROM listadeseo ");
+			int add=0;
+			while (r.next()) {
+				
+				if(r.getInt("idproducto")==id) {
+					
+					 add=cantidad+r.getInt("cantidad");
+					estatuto.execute("UPDATE listadeseo SET "
+							+ "cantidad='"+add+
+							"' where idproducto='"+id+"' ");
+				}
+				
+				
+			}
+			
+			
+			
 			
 
 			System.out.println( "Se ha modificado exitosamente " );
@@ -81,28 +96,35 @@ public class listaDeseoImpl {
 
 			try {
 				
-				r2 = search("SELECT id,idproducto,cantidad FROM listadeseo ");			
+				r2 = search("SELECT idproducto,cantidad FROM listadeseo ");			
 				String acumulado="";	
 					 System.out.println("\n SE MUESTRAN TODOS LOS REGISTROS DE LA LISTA DE DESEOS:\n"+
 							 "____________________________________\n"+
-							 "ITEM| DESCRIPCION       |ID-PRODUCTO|PRECIO|CANTIDAD "
-							 
-							 
-							 );
+							 "ITEM| DESCRIPCION       |ID-PRODUCTO|PRECIO|CANTIDAD " );
+				
 					 int cont=1;
 				while (r2.next()) {
+					
 					r = search("SELECT id,nombre,precio,cantidad FROM productos ");
 					
 					while (r.next() ) {
-										
-						//if(r2.getInt("cantidad")>=r.getInt("cantidad")) {
-						
-						
+					
 		             if(r2.getInt("idproducto")==r.getInt("id")) {
+		            	 
+		            	if(r.getInt("cantidad")<r2.getInt("cantidad")) {
+		            	 
+		            	 delete(r2.getInt("idproducto"));
+		            	 
+		            	 System.out.println("El producto "+r.getString("nombre")+"se elimino de favoritos- sin stock");
+		            	 
+		            	 }
+		            	 
+		            	 
+		            	 
 		            	 acumulado=" "+cont+ " | "+
 		            			   
 		                           r.getString("nombre") + " |    " +
-		                           r2.getInt("id") + "    | " +
+		                           r2.getInt("idproducto") + "    | " +
 		            			   r.getString("precio")+ " |   " +
 		            			   r2.getString("cantidad")+ "  | " +
 		                           "\n"+acumulado;
@@ -158,7 +180,7 @@ public class listaDeseoImpl {
 			
 			Statement estatuto = conex.getConnection().createStatement();
 			
-			estatuto.execute("DELETE FROM listadeseo where id='"+id+"' ");
+			estatuto.execute("DELETE FROM listadeseo where idproducto='"+id+"' ");
 			System.out.println("Se ha eliminado exitosamente ");
 
 			//estatuto.execute("ALTER TABLE  listadeseo AUTO_INCREMENT='"+1+"' ");
@@ -175,83 +197,90 @@ public class listaDeseoImpl {
 		
 	}
 
-	public void Validate(int id,int opc) {
+	public int Validate(int opc) {
 		
 		boolean error=true;
 		int cantidad=0;
 		ResultSet r;
 		
-		if(opc==1) {
-			
 		
-		r = search("SELECT id,cantidad FROM productos ");
+		if(opc==1) {
+		int agregado=0;
+		System.out.println("Digite id de producto a agregar:");
+		int id = teclado.nextInt();
+		
+		if( id > 0 ) {
+	
+			//if(opc==1) {
+	
+			r = search("SELECT id,cantidad FROM productos ");
 		 
 		try {
-			while (r.next()) {
+					
+				while (r.next()) {
 			
-			if(r.getInt("id")==id) {
-				
-				System.out.println( "Digite cantidad de producto a agregar:" );
-				cantidad = teclado.nextInt();
-				
-				if(r.getInt("cantidad")>=cantidad) {
+				  if(r.getInt("id")==id && r.getInt("cantidad")>0) {
 				
 					
-					save(id,cantidad);
-					error=true;
-					break;
-					
-					
-				}else {
-					error=true;
-					System.out.println( "Cantidad supera stock" );}
 				
-			}else {error=false;}
+					   do {
+							System.out.println( "Digite cantidad de producto a agregar:" );
+							cantidad = teclado.nextInt();
+									
+							  if(r.getInt("cantidad")>=cantidad) {
+									
+										save(id,cantidad);
+										//error=true;
+										//break;
+										agregado++;	
+							  }else {error=true; System.out.println( "Cantidad supera stock" );}
+										
+							}while(cantidad >=r.getInt("cantidad"));
+							     
+					   error=true;
+						
+				}else {error=false;}
 			
-							}
+			}
 			
-			if(error==false) {System.out.println( "Id incorrecta" );}
-		
-			error=true;
+		if(error==false && agregado>0) {
+				System.out.println( "Id incorrecta o producto sin stock" );
+				return 0;}
+
+				error=true;
+				agregado=0;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 			
-		}
+		}}
 		
 		
 		if(opc==2) {
-			
-			
-			r = search("SELECT id,cantidad FROM listadeseo ");
+			int agregado=0;
+			System.out.println("Digite id de producto a modificar:");
+			int id = teclado.nextInt();
+			r = search("SELECT idproducto,cantidad FROM listadeseo ");
 			 
 			try {
 				while (r.next()) {
 				
-				if(r.getInt("id")==id) {
+				if(r.getInt("idproducto")==id) {
 					
 					System.out.println( "Digite cantidad de producto a agregar:" );
 					cantidad = teclado.nextInt();
 					
 					if(r.getInt("cantidad")>=cantidad) {
 					
-						
 						update(id,cantidad);
-						
-						
-						
-					}else {
-						error=true;
-						System.out.println( "Cantidad supera stock" );}
+						agregado++;
+					}else {error=true;System.out.println( "Cantidad supera stock" );}
 					
-				}else {error=false;}
+				}else {error=false;}}
+		
+		if(error==false && agregado>0 ) {System.out.println( "Id incorrecta" );return 0;}
 				
-								}
-				
-				if(error==false) {System.out.println( "Id incorrecta" );}
-			
-			
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -262,21 +291,25 @@ public class listaDeseoImpl {
 		
 		if(opc==3) {
 			
-			
-			r = search("SELECT id,cantidad FROM listadeseo ");
+			int agregado=0;
+			System.out.println("Digite id de producto a eliminar:");
+			 int id = teclado.nextInt();
+			r = search("SELECT idproducto,cantidad FROM listadeseo ");
 			 
 			try {
 				while (r.next()) {
 				
-				if(r.getInt("id")==id) {
+				if(r.getInt("idproducto")==id) {
 					
 					delete(id);					
+					agregado++;
 					
 				}else {error=false;}
 				
 								}
 				
-				if(error==false) {System.out.println( "Id incorrecta" );}
+				if(error==false && agregado<0) {System.out.println( "Id incorrecta" );
+				return 0;}
 			
 			
 			} catch (SQLException e) {
@@ -288,7 +321,7 @@ public class listaDeseoImpl {
 		
 		
 		
-		
+		return 1;
 	}
 	
 	

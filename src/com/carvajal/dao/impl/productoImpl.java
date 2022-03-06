@@ -64,17 +64,5 @@ public class productoImpl {
 
     }	
 	
-/*public void menumetodos(int w) {
-		
-		
-		switch (w) {
-		case 1: {listAll();}break;
-		case 2: {buscar();}break;
-				default:{};
-		}
-		
-		
-		
-		
-	}*/
+
 }

@@ -47,28 +47,37 @@ public class Menu {
 					
 				case 3: {
 					
-					int opc=1;
-					catalogo.listAll();
-					System.out.println("Digite id de producto a agregar:");
-					int id = teclado.nextInt();
-					lista.Validate(id,opc);}break;
 					
+						
+					
+					int opc=1, x = 1;
+					catalogo.listAll();
+					do {
+					
+					x = lista.Validate(opc);
+					
+					
+					}while(x != 1);
+					}break;
+				
 				case 4: {
 					
-					int opc=2;
+					int opc=2, x = 1;
 					lista.listAll();
-					System.out.println("Digite id de producto a modificar:");
-					int id = teclado.nextInt();
-					lista.Validate(id,opc);}break;
+					do{
+						
+					x=lista.Validate(opc);
+				    }while(x != 1);}break;
 					
 				
 				case 5: {
 					
-					int opc=3;
+					int opc=3, x = 1;
 					lista.listAll();
-					System.out.println("Digite id de producto a eliminar de favoritos:");
-					int id = teclado.nextInt();
-					lista.Validate(id,opc);}break;
+					do{
+					
+					lista.Validate(opc);
+				}while(x != 1);}break;
 					
 				
 				case 6: {
@@ -80,7 +89,7 @@ public class Menu {
 				}
 				
 				
-				if(n<1 || n>5) {
+				if(n<1 || n>6) {
 					System.out.println("Opcion invalida");
 						
 							}
